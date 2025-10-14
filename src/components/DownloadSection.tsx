@@ -4,10 +4,16 @@ import '../styles/DownloadSection.css';
 
 interface DownloadSectionProps {
   processedImages: TonalRanges;
+  onIndividualDownload?: (type: 'highlights' | 'midtones' | 'shadows' | 'darks') => void;
+  onBulkDownload?: (count: number) => void;
 }
 
-const DownloadSection: React.FC<DownloadSectionProps> = ({ processedImages }) => {
-  const handleDownload = (blob: Blob, filename: string) => {
+const DownloadSection: React.FC<DownloadSectionProps> = ({ 
+  processedImages, 
+  onIndividualDownload,
+  onBulkDownload 
+}) => {
+  const handleDownload = (blob: Blob, filename: string, type?: 'highlights' | 'midtones' | 'shadows' | 'darks') => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -16,16 +22,29 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({ processedImages }) =>
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    
+    // Track individual download
+    if (type && onIndividualDownload) {
+      onIndividualDownload(type);
+    }
   };
 
   const handleDownloadAll = () => {
-    Object.values(processedImages).forEach(image => {
+    const availableImages = Object.values(processedImages).filter(image => image);
+    const imageCount = availableImages.length;
+    
+    availableImages.forEach((image, index) => {
       if (image) {
         setTimeout(() => {
           handleDownload(image.blob, image.name);
-        }, 100); // Small delay between downloads
+        }, index * 100); // Small delay between downloads
       }
     });
+    
+    // Track bulk download
+    if (onBulkDownload && imageCount > 0) {
+      onBulkDownload(imageCount);
+    }
   };
 
   const availableImages = Object.entries(processedImages).filter(([_, image]) => image !== null);
@@ -49,7 +68,7 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({ processedImages }) =>
                 <img src={image.dataUrl} alt={`${rangeName} tones`} />
                 <div className="image-overlay">
                   <button
-                    onClick={() => handleDownload(image.blob, image.name)}
+                    onClick={() => handleDownload(image.blob, image.name, rangeName as 'highlights' | 'midtones' | 'shadows' | 'darks')}
                     className="download-button"
                   >
                     📥 Download

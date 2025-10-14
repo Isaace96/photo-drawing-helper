@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import ImageUploader from './components/ImageUploader';
 import ProgressBar from './components/ProgressBar';
 import ImageProcessor from './components/ImageProcessor';
 import DownloadSection from './components/DownloadSection';
 import { ImageData, ProcessingState, TonalRanges } from './types';
+import { analytics, Analytics } from './utils/analytics';
 
 function App() {
   const [uploadedImage, setUploadedImage] = useState<ImageData | null>(null);
@@ -20,6 +21,13 @@ function App() {
     shadows: null,
     darks: null
   });
+  const [processingStartTime, setProcessingStartTime] = useState<number>(0);
+
+  // Initialize Google Analytics on component mount
+  useEffect(() => {
+    // Replace 'G-XXXXXXXXXX' with your actual Google Analytics Measurement ID
+    Analytics.initializeGA('G-862QTFKQ4N');
+  }, []);
 
   const handleImageUpload = (imageData: ImageData) => {
     setUploadedImage(imageData);
@@ -29,6 +37,10 @@ function App() {
       shadows: null,
       darks: null
     });
+    setProcessingStartTime(Date.now());
+    
+    // Track upload analytics
+    analytics.trackImageUpload(imageData.file.size, imageData.file.type);
   };
 
   const handleProcessingUpdate = (state: ProcessingState) => {
@@ -43,6 +55,10 @@ function App() {
       stage: 'Complete',
       error: null
     });
+    
+    // Track processing completion analytics
+    const processingTime = Date.now() - processingStartTime;
+    analytics.trackImageProcessed(processingTime);
   };
 
   const handleReset = () => {
@@ -99,7 +115,11 @@ function App() {
             
             {(processedImages.highlights || processedImages.midtones || 
               processedImages.shadows || processedImages.darks) && (
-              <DownloadSection processedImages={processedImages} />
+              <DownloadSection 
+                processedImages={processedImages} 
+                onIndividualDownload={(type: 'highlights' | 'midtones' | 'shadows' | 'darks') => analytics.trackIndividualDownload(type)}
+                onBulkDownload={(count: number) => analytics.trackBulkDownload(count)}
+              />
             )}
             
             {processingState.error && (
