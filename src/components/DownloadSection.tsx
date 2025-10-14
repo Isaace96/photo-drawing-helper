@@ -1,6 +1,6 @@
 import React from 'react';
 import { TonalRanges } from '../types';
-import { downloadBlob, isMobileDevice, shareBlob, canUseNativeShare } from '../utils/mobileDownload';
+import { downloadBlob, isMobileDevice, shareBlob, shareMultipleBlobs, canUseNativeShare } from '../utils/mobileDownload';
 import '../styles/DownloadSection.css';
 
 interface DownloadSectionProps {
@@ -31,20 +31,13 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
       // Fall back to regular download
       downloadBlob(blob, filename);
       
-      // Show simple instruction for mobile
-      if (isMobileDevice()) {
-        setTimeout(() => {
-          alert('💡 Tip: If download doesn\'t work, try long-pressing the image and selecting "Save Image" or "Download"');
-        }, 1500);
-      }
-      
       // Track individual download
       if (type && onIndividualDownload) {
         onIndividualDownload(type);
       }
     } catch (error) {
       console.error('Download error:', error);
-      alert('Download failed. Try long-pressing the image and selecting "Save Image"');
+      // Silent failure - no popup
     }
   };
 
@@ -52,13 +45,24 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
     const availableImages = Object.values(processedImages).filter(image => image);
     const imageCount = availableImages.length;
     
-    if (isMobileDevice()) {
-      // Simple confirmation for mobile
-      const proceed = window.confirm(`Download ${imageCount} images? They will download one by one.`);
-      if (!proceed) return;
+    // Try native share for all files at once on mobile
+    if (isMobileDevice() && canUseNativeShare()) {
+      const blobData = availableImages.map(image => ({
+        blob: image!.blob,
+        filename: image!.name
+      }));
+      
+      const shared = await shareMultipleBlobs(blobData);
+      if (shared) {
+        // Track bulk download/share
+        if (onBulkDownload && imageCount > 0) {
+          onBulkDownload(imageCount);
+        }
+        return;
+      }
     }
     
-    // Download all images with small delays
+    // Fall back to individual downloads with delays
     for (let i = 0; i < availableImages.length; i++) {
       const image = availableImages[i];
       if (image) {

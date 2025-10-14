@@ -30,6 +30,31 @@ export const shareBlob = async (blob: Blob, filename: string): Promise<boolean> 
   return false;
 };
 
+export const shareMultipleBlobs = async (blobs: Array<{ blob: Blob; filename: string }>): Promise<boolean> => {
+  if (!canUseNativeShare() || blobs.length === 0) {
+    return false;
+  }
+  
+  try {
+    const files = blobs.map(({ blob, filename }) => 
+      new File([blob], filename, { type: blob.type })
+    );
+    
+    if (navigator.canShare && navigator.canShare({ files })) {
+      await navigator.share({
+        title: 'Photo Drawing Helper',
+        text: `${files.length} processed images from Photo Drawing Helper`,
+        files
+      });
+      return true;
+    }
+  } catch (error) {
+    console.warn('Native multi-file share failed:', error);
+  }
+  
+  return false;
+};
+
 export const downloadBlob = (blob: Blob, filename: string): void => {
   // Try multiple download methods for better mobile compatibility
   
@@ -80,6 +105,6 @@ export const downloadBlob = (blob: Blob, filename: string): void => {
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   } catch (error) {
     console.error('All download methods failed');
-    alert('Download failed. Please try using a different browser or device.');
+    // Silent failure - no popup
   }
 };
