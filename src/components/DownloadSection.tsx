@@ -1,5 +1,6 @@
 import React from 'react';
 import { TonalRanges } from '../types';
+import { createMobileFriendlyDownload, isMobileDevice } from '../utils/mobileDownload';
 import '../styles/DownloadSection.css';
 
 interface DownloadSectionProps {
@@ -13,19 +14,22 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
   onIndividualDownload,
   onBulkDownload 
 }) => {
-  const handleDownload = (blob: Blob, filename: string, type?: 'highlights' | 'midtones' | 'shadows' | 'darks') => {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    // Track individual download
-    if (type && onIndividualDownload) {
-      onIndividualDownload(type);
+  const handleDownload = async (blob: Blob, filename: string, type?: 'highlights' | 'midtones' | 'shadows' | 'darks') => {
+    try {
+      const success = await createMobileFriendlyDownload(blob, filename);
+      
+      if (!success) {
+        // Fallback: show error message
+        alert('Download failed. Please try again or check your browser settings.');
+      }
+      
+      // Track individual download
+      if (type && onIndividualDownload) {
+        onIndividualDownload(type);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Download failed. Please try again.');
     }
   };
 
@@ -33,13 +37,34 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
     const availableImages = Object.values(processedImages).filter(image => image);
     const imageCount = availableImages.length;
     
-    availableImages.forEach((image, index) => {
-      if (image) {
-        setTimeout(() => {
-          handleDownload(image.blob, image.name);
-        }, index * 100); // Small delay between downloads
+    if (isMobileDevice()) {
+      // On mobile, warn user about multiple downloads
+      const confirmDownload = window.confirm(
+        `Download ${imageCount} images?\n\nEach image will open in a new tab. Please save each one manually.\n\nTip: Use individual downloads for easier mobile experience.`
+      );
+      
+      if (!confirmDownload) {
+        return;
       }
-    });
+      
+      // Download with longer delays for mobile
+      availableImages.forEach((image, index) => {
+        if (image) {
+          setTimeout(async () => {
+            await handleDownload(image.blob, image.name);
+          }, index * 2000); // 2 second delay for mobile
+        }
+      });
+    } else {
+      // Desktop: faster sequential downloads
+      availableImages.forEach((image, index) => {
+        if (image) {
+          setTimeout(async () => {
+            await handleDownload(image.blob, image.name);
+          }, index * 200); // 200ms delay for desktop
+        }
+      });
+    }
     
     // Track bulk download
     if (onBulkDownload && imageCount > 0) {

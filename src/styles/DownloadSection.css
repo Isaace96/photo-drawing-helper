@@ -79,7 +79,7 @@
 }
 
 .download-button {
-  padding: 10px 20px;
+  padding: 12px 20px;
   background: #667eea;
   color: white;
   border: none;
@@ -91,11 +91,39 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: 44px; /* Touch-friendly minimum height */
+  min-width: 44px; /* Touch-friendly minimum width */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .download-button:hover {
   background: #5a6fd8;
   transform: scale(1.05);
+}
+
+.download-button:active {
+  transform: scale(0.98);
+  background: #4c63d2;
+}
+
+/* Mobile-specific enhancements */
+@media (hover: none) and (pointer: coarse) {
+  .download-button {
+    padding: 14px 22px;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+  
+  .download-button:hover {
+    transform: none; /* Disable hover effects on touch devices */
+  }
+  
+  .download-button:active {
+    background: #4c63d2;
+    transform: scale(0.95);
+  }
 }
 
 .image-info {
@@ -135,11 +163,38 @@
   align-items: center;
   gap: 10px;
   box-shadow: 0 4px 16px rgba(102,126,234,0.3);
+  min-height: 48px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .download-all-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(102,126,234,0.4);
+}
+
+.download-all-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 16px rgba(102,126,234,0.3);
+}
+
+/* Mobile-specific enhancements for download-all button */
+@media (hover: none) and (pointer: coarse) {
+  .download-all-button {
+    padding: 18px 32px;
+    font-size: 1.2rem;
+    min-height: 56px;
+  }
+  
+  .download-all-button:hover {
+    transform: none;
+  }
+  
+  .download-all-button:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+  }
 }
 
 @media (max-width: 768px) {
