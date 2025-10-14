@@ -37,7 +37,7 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({ processedImages }) =>
   return (
     <div className="download-section">
       <h2>Processed Images</h2>
-      <p>Your image has been separated into tonal ranges. Download individual images or all at once.</p>
+      <p>Your image has been separated into tonal ranges. Highlights show as white on black for easy reference.</p>
       
       <div className="download-grid">
         {availableImages.map(([rangeName, image]) => {
@@ -82,7 +82,7 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({ processedImages }) =>
 const getImageDescription = (rangeName: string): string => {
   switch (rangeName) {
     case 'highlights':
-      return 'Bright areas and light tones';
+      return 'Bright areas shown as white on black';
     case 'midtones':
       return 'Medium brightness values';
     case 'shadows':

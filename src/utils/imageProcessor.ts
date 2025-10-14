@@ -106,18 +106,34 @@ export const createTonalImage = (
     }
     
     if (shouldInclude) {
-      // Convert to grayscale and keep the pixel
-      const gray = Math.round(brightness);
-      newData[i] = gray;     // R
-      newData[i + 1] = gray; // G
-      newData[i + 2] = gray; // B
-      newData[i + 3] = a;    // A
+      if (tonalRange === 'highlights') {
+        // For highlights: show as white on black background (inverted)
+        newData[i] = 255;     // R - white for highlight areas
+        newData[i + 1] = 255; // G
+        newData[i + 2] = 255; // B
+        newData[i + 3] = 255; // A - fully opaque
+      } else {
+        // For other ranges: convert to grayscale and keep the pixel
+        const gray = Math.round(brightness);
+        newData[i] = gray;     // R
+        newData[i + 1] = gray; // G
+        newData[i + 2] = gray; // B
+        newData[i + 3] = a;    // A
+      }
     } else {
-      // Make pixel transparent
-      newData[i] = 255;     // R - white background
-      newData[i + 1] = 255; // G
-      newData[i + 2] = 255; // B
-      newData[i + 3] = 255; // A - fully opaque white
+      if (tonalRange === 'highlights') {
+        // For highlights: make non-highlight areas black
+        newData[i] = 0;       // R - black background
+        newData[i + 1] = 0;   // G
+        newData[i + 2] = 0;   // B
+        newData[i + 3] = 255; // A - fully opaque black
+      } else {
+        // For other ranges: make pixel transparent/white background
+        newData[i] = 255;     // R - white background
+        newData[i + 1] = 255; // G
+        newData[i + 2] = 255; // B
+        newData[i + 3] = 255; // A - fully opaque white
+      }
     }
   }
   
