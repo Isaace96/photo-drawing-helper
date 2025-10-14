@@ -2,7 +2,7 @@
   "name": "photo-drawing-helper",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://isaace96.github.io/photo-drawing-helper",
+  "homepage": "https://Isaace96.github.io/photo-drawing-helper",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
