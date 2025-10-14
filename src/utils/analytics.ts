@@ -10,7 +10,7 @@ class Analytics {
 
   constructor() {
     this.currentSession = this.initializeSession();
-    this.trackPageView();
+    // Don't track page view immediately - wait for GA to be initialized
   }
 
   private initializeSession() {
@@ -87,10 +87,17 @@ class Analytics {
   // Send events to Google Analytics (if gtag is available)
   private sendToGA(eventName: string, parameters: Record<string, any>): void {
     if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', eventName, {
-        custom_parameter: true,
-        ...parameters
-      });
+      try {
+        (window as any).gtag('event', eventName, {
+          custom_parameter: true,
+          ...parameters
+        });
+        console.log(`📊 GA Event sent: ${eventName}`, parameters);
+      } catch (error) {
+        console.error('📊 GA Error sending event:', error);
+      }
+    } else {
+      console.warn('📊 GA not available, event not sent:', eventName, parameters);
     }
   }
 
@@ -102,6 +109,15 @@ class Analytics {
     const script1 = document.createElement('script');
     script1.async = true;
     script1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    
+    script1.onload = () => {
+      console.log('📊 Google Analytics script loaded successfully');
+    };
+    
+    script1.onerror = () => {
+      console.error('📊 Failed to load Google Analytics script');
+    };
+    
     document.head.appendChild(script1);
 
     // Initialize gtag
@@ -116,7 +132,12 @@ class Analytics {
       send_page_view: false // We'll handle page views manually
     });
 
-    console.log('📊 Google Analytics initialized');
+    console.log(`📊 Google Analytics initialized with ID: ${measurementId}`);
+    
+    // Track initial page view after GA is set up
+    setTimeout(() => {
+      analytics.trackPageView();
+    }, 1000); // Small delay to ensure GA script is loaded
   }
 }
 
