@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Photo Helper",
+  "name": "Photo Drawing Helper - Tonal Separation Tool",
+  "description": "Extract highlights, midtones, shadows, and darks from photos for drawing reference",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#667eea",
+  "background_color": "#667eea",
+  "categories": ["photo", "graphics", "utilities"]
 }
