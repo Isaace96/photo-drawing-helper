@@ -70,7 +70,7 @@ export const calculateBrightnessThresholds = (imageData: ImageData): ThresholdVa
 };
 
 /**
- * Create a grayscale image for a specific tonal range
+ * Create a greyscale image for a specific tonal range
  */
 export const createTonalImage = (
   originalImageData: ImageData,
@@ -107,17 +107,18 @@ export const createTonalImage = (
     
     if (shouldInclude) {
       if (tonalRange === 'highlights') {
-        // For highlights: show as white on black background (inverted)
-        newData[i] = 255;     // R - white for highlight areas
-        newData[i + 1] = 255; // G
-        newData[i + 2] = 255; // B
-        newData[i + 3] = 255; // A - fully opaque
+        // For highlights: show actual brightness values as white/light grey on black background
+        const grey = Math.round(brightness);
+        newData[i] = grey;     // R - actual brightness value
+        newData[i + 1] = grey; // G
+        newData[i + 2] = grey; // B
+        newData[i + 3] = 255;  // A - fully opaque
       } else {
-        // For other ranges: convert to grayscale and keep the pixel
-        const gray = Math.round(brightness);
-        newData[i] = gray;     // R
-        newData[i + 1] = gray; // G
-        newData[i + 2] = gray; // B
+        // For other ranges: convert to greyscale and keep the pixel
+        const grey = Math.round(brightness);
+        newData[i] = grey;     // R
+        newData[i + 1] = grey; // G
+        newData[i + 2] = grey; // B
         newData[i + 3] = a;    // A
       }
     } else {

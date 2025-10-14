@@ -1,6 +1,6 @@
 # Photo Drawing Helper
 
-A React.js web application that processes images to extract tonal ranges for drawing reference. Upload an image and get four separate grayscale images showing highlights, midtones, shadows, and darks.
+A React.js web application that processes images to extract tonal ranges for drawing reference. Upload an image and get four separate greyscale images showing highlights, midtones, shadows, and darks.
 
 ## Features
 
@@ -8,7 +8,7 @@ A React.js web application that processes images to extract tonal ranges for dra
 - **Multiple Format Support**: Supports JPG, PNG, GIF, and WebP formats
 - **Client-Side Processing**: All image processing happens in your browser - no server required
 - **Automatic Threshold Calculation**: Intelligently analyzes your image to determine tonal ranges
-- **Grayscale Output**: Clean grayscale images perfect for drawing reference
+- **greyscale Output**: Clean greyscale images perfect for drawing reference
 - **Individual Downloads**: Download each tonal range separately as JPG files
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 

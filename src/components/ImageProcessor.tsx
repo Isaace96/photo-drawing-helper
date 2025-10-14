@@ -26,7 +26,8 @@ const ImageProcessor: React.FC<ImageProcessorProps> = ({
     
     isProcessingRef.current = true;
     processImage();
-  }, [imageData]); // processImage is defined inside useEffect, so it's not needed as dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageData]); // processImage is defined inside this component and doesn't need to be a dependency
 
   const processImage = async () => {
     try {

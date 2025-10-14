@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favicon Generator</title>
+    <style>
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h3>Photo Drawing Helper Favicon Generator</h3>
+    <canvas id="favicon16" width="16" height="16"></canvas>
+    <canvas id="favicon32" width="32" height="32"></canvas>
+    <canvas id="favicon192" width="192" height="192"></canvas>
+    <canvas id="favicon512" width="512" height="512"></canvas>
+    
+    <br><br>
+    <button onclick="downloadAll()">Download All Sizes</button>
+    
+    <script>
+        function drawFavicon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const squareSize = Math.floor(size * 0.35);
+            const gap = Math.floor(size * 0.05);
+            const startX = Math.floor((size - (squareSize * 2 + gap)) / 2);
+            const startY = Math.floor((size - (squareSize * 2 + gap)) / 2);
+            
+            // Background
+            ctx.fillStyle = '#667eea';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Highlights (top-left)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(startX, startY, squareSize, squareSize);
+            
+            // Midtones (top-right)
+            ctx.fillStyle = '#999999';
+            ctx.fillRect(startX + squareSize + gap, startY, squareSize, squareSize);
+            
+            // Shadows (bottom-left)
+            ctx.fillStyle = '#444444';
+            ctx.fillRect(startX, startY + squareSize + gap, squareSize, squareSize);
+            
+            // Darks (bottom-right)
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(startX + squareSize + gap, startY + squareSize + gap, squareSize, squareSize);
+            
+            // Small center circle
+            if (size >= 32) {
+                const centerX = size / 2;
+                const centerY = size / 2;
+                const radius = Math.max(2, size * 0.08);
+                
+                ctx.fillStyle = '#667eea';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.6, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function downloadAll() {
+            downloadCanvas(document.getElementById('favicon16'), 'favicon-16x16.png');
+            downloadCanvas(document.getElementById('favicon32'), 'favicon-32x32.png');
+            downloadCanvas(document.getElementById('favicon192'), 'logo192.png');
+            downloadCanvas(document.getElementById('favicon512'), 'logo512.png');
+        }
+        
+        // Draw all favicons
+        drawFavicon(document.getElementById('favicon16'), 16);
+        drawFavicon(document.getElementById('favicon32'), 32);
+        drawFavicon(document.getElementById('favicon192'), 192);
+        drawFavicon(document.getElementById('favicon512'), 512);
+    </script>
+</body>
+</html>
