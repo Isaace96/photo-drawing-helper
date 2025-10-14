@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="32" height="32" fill="#667eea" rx="4"/>
+  
+  <!-- Tonal separation squares representing the four ranges -->
+  <!-- Highlights (brightest - top left) -->
+  <rect x="3" y="3" width="12" height="12" fill="#ffffff" rx="1"/>
+  
+  <!-- Midtones (medium - top right) -->
+  <rect x="17" y="3" width="12" height="12" fill="#999999" rx="1"/>
+  
+  <!-- Shadows (darker - bottom left) -->
+  <rect x="3" y="17" width="12" height="12" fill="#444444" rx="1"/>
+  
+  <!-- Darks (darkest - bottom right) -->
+  <rect x="17" y="17" width="12" height="12" fill="#111111" rx="1"/>
+  
+  <!-- Small camera/photo icon in center to indicate photo processing -->
+  <circle cx="16" cy="16" r="3" fill="#667eea" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="16" cy="16" r="1.5" fill="#ffffff"/>
+</svg>
