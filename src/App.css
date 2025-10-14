@@ -63,6 +63,18 @@
   background: #5a6fd8;
 }
 
+.reset-button.disabled,
+.reset-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reset-button.disabled:hover,
+.reset-button:disabled:hover {
+  background: #9ca3af;
+}
+
 .error-message {
   background: #ff6b6b;
   color: white;

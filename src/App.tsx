@@ -75,8 +75,12 @@ function App() {
           <>
             <div className="image-preview">
               <img src={uploadedImage.preview} alt="Uploaded" className="uploaded-image" />
-              <button onClick={handleReset} className="reset-button">
-                Upload New Image
+              <button 
+                onClick={handleReset} 
+                className={`reset-button ${processingState.isProcessing ? 'disabled' : ''}`}
+                disabled={processingState.isProcessing}
+              >
+                {processingState.isProcessing ? 'Processing...' : 'Upload New Image'}
               </button>
             </div>
             
