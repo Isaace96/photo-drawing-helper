@@ -1,6 +1,46 @@
-# Getting Started with Create React App
+# Photo Drawing Helper
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React.js web application that processes images to extract tonal ranges for drawing reference. Upload an image and get four separate grayscale images showing highlights, midtones, shadows, and darks.
+
+## Features
+
+- **Drag & Drop Upload**: Easy image upload with drag-and-drop interface
+- **Multiple Format Support**: Supports JPG, PNG, GIF, and WebP formats
+- **Client-Side Processing**: All image processing happens in your browser - no server required
+- **Automatic Threshold Calculation**: Intelligently analyzes your image to determine tonal ranges
+- **Grayscale Output**: Clean grayscale images perfect for drawing reference
+- **Individual Downloads**: Download each tonal range separately as JPG files
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+
+## How It Works
+
+1. **Upload**: Drag and drop an image or click to select one
+2. **Processing**: The app analyzes brightness values across your image
+3. **Threshold Calculation**: Automatically determines the boundaries between darks, shadows, midtones, and highlights
+4. **Tonal Separation**: Creates four separate images, each showing only pixels in that tonal range
+5. **Download**: Get your processed images as JPG files
+
+## Tonal Ranges
+
+- **Darks**: The deepest shadows and near-black areas (0-25th percentile brightness)
+- **Shadows**: Dark areas with visible detail (25th-50th percentile brightness)  
+- **Midtones**: Medium brightness values (50th-75th percentile brightness)
+- **Highlights**: Bright areas and light tones (75th-100th percentile brightness)
+
+## Technical Details
+
+- **Framework**: React.js with TypeScript
+- **Image Processing**: HTML5 Canvas API
+- **Luminosity Calculation**: Standard formula (0.299×R + 0.587×G + 0.114×B)
+- **Threshold Method**: Percentile-based automatic calculation
+- **Output Format**: High-quality JPG files
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm or yarn
 
 ## Available Scripts
 
