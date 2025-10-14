@@ -1,125 +1,85 @@
-// Mobile-friendly download utilities
+// Simple and reliable mobile download utilities
 export const isMobileDevice = (): boolean => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-         'ontouchstart' in window ||
-         navigator.maxTouchPoints > 1;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
-export const isIOSDevice = (): boolean => {
-  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+export const canUseNativeShare = (): boolean => {
+  return 'navigator' in window && 'share' in navigator && 'canShare' in navigator;
+};
+
+export const shareBlob = async (blob: Blob, filename: string): Promise<boolean> => {
+  if (!canUseNativeShare()) {
+    return false;
+  }
+  
+  try {
+    const file = new File([blob], filename, { type: blob.type });
+    
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: 'Photo Drawing Helper',
+        text: `Processed image: ${filename}`,
+        files: [file]
+      });
+      return true;
+    }
+  } catch (error) {
+    console.warn('Native share failed:', error);
+  }
+  
+  return false;
 };
 
 export const downloadBlob = (blob: Blob, filename: string): void => {
-  const url = URL.createObjectURL(blob);
+  // Try multiple download methods for better mobile compatibility
   
-  if (isMobileDevice()) {
-    // Mobile approach: Open in new tab
+  // Method 1: Standard download link (works on most devices)
+  try {
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
+    link.style.display = 'none';
     
-    // Make the link invisible
-    link.style.position = 'fixed';
-    link.style.top = '-10000px';
-    link.style.left = '-10000px';
-    link.style.opacity = '0';
-    link.style.pointerEvents = 'none';
-    
-    document.body.appendChild(link);
-    
-    // Trigger download with both methods for better compatibility
-    if (isIOSDevice()) {
-      // iOS Safari specific handling
-      const clickEvent = new MouseEvent('click', {
-        view: window,
-        bubbles: true,
-        cancelable: true
-      });
-      link.dispatchEvent(clickEvent);
-    } else {
-      // Android and other mobile browsers
-      link.click();
-    }
-    
-    // Clean up
-    setTimeout(() => {
-      if (document.body.contains(link)) {
-        document.body.removeChild(link);
-      }
-      URL.revokeObjectURL(url);
-    }, 1000);
-    
-  } else {
-    // Desktop approach
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return;
+  } catch (error) {
+    console.warn('Standard download failed, trying fallback');
   }
-};
-
-export const showMobileDownloadInstructions = (): void => {
-  if (isIOSDevice()) {
-    // iOS-specific instructions
-    const message = `💡 iOS Download Tips:
-    
-1. If download doesn't start automatically, tap and hold the image
-2. Select "Save to Photos" or "Download Image"
-3. Or use "Share" → "Save to Files"
-
-The image will be saved to your device!`;
-    
-    alert(message);
-  } else if (isMobileDevice()) {
-    // Android and other mobile devices
-    const message = `💡 Mobile Download Tips:
-    
-1. The image will open in a new tab
-2. Tap the download icon in your browser
-3. Or tap and hold the image to save it
-
-Check your Downloads folder or Photos app!`;
-    
-    alert(message);
-  }
-};
-
-export const createMobileFriendlyDownload = (blob: Blob, filename: string): Promise<boolean> => {
-  return new Promise((resolve) => {
+  
+  // Method 2: For mobile browsers that don't support download attribute
+  if (isMobileDevice()) {
     try {
-      downloadBlob(blob, filename);
-      
-      // Show instructions after a brief delay
-      if (isMobileDevice()) {
-        setTimeout(() => {
-          showMobileDownloadInstructions();
-        }, 500);
-      }
-      
-      resolve(true);
+      const reader = new FileReader();
+      reader.onload = function() {
+        const dataUrl = reader.result as string;
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        link.target = '_blank';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+      reader.readAsDataURL(blob);
+      return;
     } catch (error) {
-      console.error('Download failed:', error);
-      
-      // Fallback: Try to open image in new tab
-      if (isMobileDevice()) {
-        try {
-          const url = URL.createObjectURL(blob);
-          window.open(url, '_blank');
-          setTimeout(() => URL.revokeObjectURL(url), 5000);
-          showMobileDownloadInstructions();
-          resolve(true);
-        } catch (fallbackError) {
-          console.error('Fallback download failed:', fallbackError);
-          resolve(false);
-        }
-      } else {
-        resolve(false);
-      }
+      console.warn('Data URL download failed');
     }
-  });
+  }
+  
+  // Method 3: Last resort - open in new window
+  try {
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (error) {
+    console.error('All download methods failed');
+    alert('Download failed. Please try using a different browser or device.');
+  }
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TonalRanges } from '../types';
-import { createMobileFriendlyDownload, isMobileDevice } from '../utils/mobileDownload';
+import { downloadBlob, isMobileDevice, shareBlob, canUseNativeShare } from '../utils/mobileDownload';
 import '../styles/DownloadSection.css';
 
 interface DownloadSectionProps {
@@ -16,11 +16,26 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
 }) => {
   const handleDownload = async (blob: Blob, filename: string, type?: 'highlights' | 'midtones' | 'shadows' | 'darks') => {
     try {
-      const success = await createMobileFriendlyDownload(blob, filename);
+      // Try native share first on mobile devices
+      if (isMobileDevice() && canUseNativeShare()) {
+        const shared = await shareBlob(blob, filename);
+        if (shared) {
+          // Track download even for shares
+          if (type && onIndividualDownload) {
+            onIndividualDownload(type);
+          }
+          return;
+        }
+      }
       
-      if (!success) {
-        // Fallback: show error message
-        alert('Download failed. Please try again or check your browser settings.');
+      // Fall back to regular download
+      downloadBlob(blob, filename);
+      
+      // Show simple instruction for mobile
+      if (isMobileDevice()) {
+        setTimeout(() => {
+          alert('💡 Tip: If download doesn\'t work, try long-pressing the image and selecting "Save Image" or "Download"');
+        }, 1500);
       }
       
       // Track individual download
@@ -29,41 +44,28 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
       }
     } catch (error) {
       console.error('Download error:', error);
-      alert('Download failed. Please try again.');
+      alert('Download failed. Try long-pressing the image and selecting "Save Image"');
     }
   };
 
-  const handleDownloadAll = () => {
+  const handleDownloadAll = async () => {
     const availableImages = Object.values(processedImages).filter(image => image);
     const imageCount = availableImages.length;
     
     if (isMobileDevice()) {
-      // On mobile, warn user about multiple downloads
-      const confirmDownload = window.confirm(
-        `Download ${imageCount} images?\n\nEach image will open in a new tab. Please save each one manually.\n\nTip: Use individual downloads for easier mobile experience.`
-      );
-      
-      if (!confirmDownload) {
-        return;
+      // Simple confirmation for mobile
+      const proceed = window.confirm(`Download ${imageCount} images? They will download one by one.`);
+      if (!proceed) return;
+    }
+    
+    // Download all images with small delays
+    for (let i = 0; i < availableImages.length; i++) {
+      const image = availableImages[i];
+      if (image) {
+        setTimeout(async () => {
+          await handleDownload(image.blob, image.name);
+        }, i * 800); // 800ms delay between downloads
       }
-      
-      // Download with longer delays for mobile
-      availableImages.forEach((image, index) => {
-        if (image) {
-          setTimeout(async () => {
-            await handleDownload(image.blob, image.name);
-          }, index * 2000); // 2 second delay for mobile
-        }
-      });
-    } else {
-      // Desktop: faster sequential downloads
-      availableImages.forEach((image, index) => {
-        if (image) {
-          setTimeout(async () => {
-            await handleDownload(image.blob, image.name);
-          }, index * 200); // 200ms delay for desktop
-        }
-      });
     }
     
     // Track bulk download
@@ -118,6 +120,11 @@ const DownloadSection: React.FC<DownloadSectionProps> = ({
         >
           📦 Download All Images
         </button>
+        {isMobileDevice() && (
+          <p className="mobile-tip">
+            💡 <strong>Mobile Tip:</strong> If downloads don't work, long-press any image above and select "Save Image" or "Download"
+          </p>
+        )}
       </div>
     </div>
   );

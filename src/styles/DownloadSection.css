@@ -149,6 +149,20 @@
   border-top: 2px solid #f0f0f0;
 }
 
+.mobile-tip {
+  margin-top: 15px;
+  padding: 12px;
+  background: #f0f7ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 8px;
+  color: #1a365d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .download-all-button {
   padding: 15px 30px;
   background: linear-gradient(135deg, #667eea, #764ba2);
