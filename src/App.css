@@ -8,6 +8,7 @@
 
 .App-header {
   margin-bottom: 40px;
+  position: relative;
 }
 
 .App-header h1 {
@@ -20,7 +21,26 @@
 .App-header p {
   color: #f0f0f0;
   font-size: 1.2rem;
-  margin: 0;
+  margin: 0 0 20px 0;
+}
+
+.gallery-link {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  margin-top: 10px;
+}
+
+.gallery-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 .App-main {
