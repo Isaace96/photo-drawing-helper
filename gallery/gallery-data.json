@@ -1,0 +1,15 @@
+[
+  {
+    "id": "french-bulldog",
+    "title": "French Bulldog Portrait - Betty",
+    "description": "A charming portrait of a French bulldog demonstrating how tonal separation helps capture the subtle details in fur texture and facial features",
+    "artist": "Isaac",
+    "originalImage": "/gallery/drawings/PXL_20240316_145824055.jpg",
+    "highlights": "/gallery/drawings/PXL_20240316_145824055_highlights.jpg",
+    "midtones": "/gallery/drawings/PXL_20240316_145824055_midtones.jpg",
+    "shadows": "/gallery/drawings/PXL_20240316_145824055_shadows.jpg",
+    "darks": "/gallery/drawings/PXL_20240316_145824055_darks.jpg",
+    "finalDrawing": "/gallery/drawings/PXL_20240316_145824055_final.jpg",
+    "tags": ["portrait", "pet", "realistic", "pen", "animal"]
+  }
+]
